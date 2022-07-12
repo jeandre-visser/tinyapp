@@ -75,6 +75,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`urls/${newId}`); 
 });
 
+// logout endpoint
+app.get('/logout', (req, res) => {
+  res.clearCookie('username')
+  res.redirect('/urls')
+})
+
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
   const templateVars = { 
