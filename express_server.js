@@ -23,7 +23,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// GET
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -46,7 +46,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// POST
+
 app.post("/urls", (req, res) => {
   let newId = generateRandomString();
   urlDatabase[newId] = req.body.longURL;
@@ -54,3 +54,7 @@ app.post("/urls", (req, res) => {
 });
 
 
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  res.redirect(longURL);
+});
