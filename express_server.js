@@ -66,3 +66,8 @@ app.get("/u/:id", (req, res) => {
     res.status(404);
   }
 });
+
+app.post('/urls/:id/delete', (req, res) => {
+  delete urlDatabase[req.params.id]
+  res.redirect('/urls')
+})
