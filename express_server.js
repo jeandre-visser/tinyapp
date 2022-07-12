@@ -76,14 +76,14 @@ app.post("/urls", (req, res) => {
 });
 
 // logout endpoint
-app.get('/logout', (req, res) => {
+app.post('/logout', (req, res) => {
   res.clearCookie('username')
   res.redirect('/urls')
 })
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { 
+  let templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id], 
     username: req.cookies["username"] 
@@ -93,7 +93,7 @@ app.get("/urls/:id", (req, res) => {
 
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
-  const templateVars = {
+  let templateVars = {
     username: req.cookies["username"],
     urls: urlDatabase
   };
