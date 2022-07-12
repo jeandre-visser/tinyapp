@@ -1,9 +1,12 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-
 app.use(express.urlencoded({ extended: true }));
 
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
+
+// EJS template
 app.set("view engine", "ejs");
 
 app.listen(PORT, () => {
@@ -53,6 +56,12 @@ app.post('/urls/:id/delete', (req, res) => {
 // edit request
 app.post('/urls/:id/', (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL
+  res.redirect('/urls')
+})
+
+// login functionality
+app.post('/login', (req, res) => {
+  res.cookie('username', req/body.username)
   res.redirect('/urls')
 })
 
