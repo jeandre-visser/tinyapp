@@ -96,11 +96,11 @@ app.post('/login', (req, res) => {
       res.cookie('user_id', user.userId)
       res.redirect('/urls')
     } else {
-      res.statusCode = 403;
+      res.status(403);
       res.send('You have entered the incorrect password.');
     }
   } else {
-    res.statusCode = 403;
+    res.status(403);
     res.send('That email address could not be found.')
   }
 });
