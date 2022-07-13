@@ -103,11 +103,7 @@ app.post('/login', (req, res) => {
     res.statusCode = 403;
     res.send('That email address could not be found.')
   }
-
-
-
-
-})
+});
 
 // Generates short URL that is added to database and redirected to urls/:id
 app.post("/urls", (req, res) => {
