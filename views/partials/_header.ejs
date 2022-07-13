@@ -20,7 +20,7 @@
     </div>
         <div class="justify-content-center text-align-center">
           <!--Creating a form that POSTs to login-->
-          <% if (!username) { %> 
+          <% if (!user) { %> 
           <form class="form-inline" action="/login" method="POST" >
             <div class="form-group mb-2">
               <input 
@@ -35,7 +35,7 @@
           <% } else { %> 
             <form class="form-inline" action="/logout" method="POST">
               <div class="form-group mb-2">
-                <label>Logged in as: <%= username %></label>
+                <label>Logged in as: <%= user.email %></label>
                 <button type="submit" class="btn btn-outline-dark ml-2">Logout</button>
               </div>
             </form>
