@@ -91,6 +91,14 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// registration page
+app.get('/register', (req, res) => {
+  let templateVars = {
+    username: req.cookies['username']
+  };
+  res.render('urls_register', templateVars)
+})
+
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
   let templateVars = {
