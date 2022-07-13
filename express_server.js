@@ -94,7 +94,7 @@ app.post("/urls", (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie('username')
   res.redirect('/urls')
-})
+});
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
@@ -106,13 +106,21 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// login page
+app.get('/login', (req, res) => {
+  const templateVars = {
+    user: users[req.cookies['userId']]
+  }
+  req.render('login', templateVars)
+});
+
 // registration page
 app.get('/register', (req, res) => {
   const templateVars = {
     user: users[req.cookies['userId']]
   };
   res.render('urls_register', templateVars)
-})
+});
 
 // user lookup helper function
 const getUserByEmail = email => {
