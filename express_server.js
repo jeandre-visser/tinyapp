@@ -115,7 +115,7 @@ app.post("/urls", (req, res) => {
 // logout endpoint
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id')
-  res.redirect('/urls')
+  res.redirect('/login')
 });
 
 // Displays short URL and long URL
@@ -145,30 +145,6 @@ app.get('/register', (req, res) => {
 });
 
 
-
-
-// handles the registration form data
-app.post('/register', (req, res) => {
-  const userId = generateRandomString();
-
-  // error handlers
-  if (email === '' || password === '') {
-    res.statusCode = 400;
-    res.send("Invalid email and/or password")
-  } else if (getUserByEmail(req.body.email, users)) {
-    res.statusCode = 400;
-    res.send('Email already registered')
-  } else {
-  users[userId] = {
-    userId,
-    email: req.body.email,
-    password: req.body.password
-  };
-  }
-  res.cookie('user_id', userId);
-  res.redirect('/urls')
-})
-
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
   const templateVars = {
@@ -180,4 +156,26 @@ app.get("/urls", (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("Hello!");
+});
+
+// handles the registration form data
+app.post('/register', (req, res) => {
+  if (req.body.email && req.body.password) {
+    if (!getUserByEmail(req.body.email, users)) {
+      const userId = generateRandomString();
+      users[userId] = {
+        userId,
+        email: req.body.email,
+        password: req.body.password
+      };
+      res.cookie('user_id', userId);
+      res.redirect('/urls');
+    } else {
+      res.status(400)
+      res.send('Email already registered');
+    }
+  } else {
+    res.status(400);
+    res.send("Empty email and/or password fields.")
+  }
 });
