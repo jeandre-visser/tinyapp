@@ -59,7 +59,7 @@ app.get("/u/:id", (req, res) => {
 // Allows us to render a new website URL and displays it with the urls_new template
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: users[req.cookies["userId"]]
   }
   res.render("urls_new", templateVars);
 });
@@ -97,18 +97,18 @@ app.post('/logout', (req, res) => {
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { 
+  const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id], 
-    username: req.cookies["username"] 
+    user: users[req.cookies["userId"]] 
   };
   res.render("urls_show", templateVars);
 });
 
 // registration page
 app.get('/register', (req, res) => {
-  let templateVars = {
-    username: req.cookies['username']
+  const templateVars = {
+    user: users[req.cookies['userId']]
   };
   res.render('urls_register', templateVars)
 })
@@ -127,8 +127,8 @@ app.post('/register', (req, res) => {
 
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
-  let templateVars = {
-    username: req.cookies["username"],
+  const templateVars = {
+    user: users[req.cookies["userId"]],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
