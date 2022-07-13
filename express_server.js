@@ -3,7 +3,8 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const { response } = require("express");
 app.use(cookieParser())
 
 // EJS template
@@ -113,13 +114,34 @@ app.get('/register', (req, res) => {
   res.render('urls_register', templateVars)
 })
 
+// user lookup helper function
+const getUserByEmail = email => {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return true
+    }
+  }
+  return null;
+}
+
+
 // handles the registration form data
 app.post('/register', (req, res) => {
   const userId = generateRandomString();
+
+  // error handlers
+  if (email === '' || password === '') {
+    res.statusCode = 400;
+    res.send("Invalid email and/or password")
+  } else if (getUserByEmail(email)) {
+    res.statusCode = 400;
+    res.send('Email already registered')
+  } else {
   users[userId] = {
     userId,
     email: req.body.email,
     password: req.body.password
+  };
   }
   res.cookie('user_id', userId);
   res.redirect('/urls')
