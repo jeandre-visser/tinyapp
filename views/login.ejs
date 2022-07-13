@@ -15,8 +15,10 @@
   <body>
     <%- include('partials/_header') %>
 
-    <main style="margin: 1em;">
-      <h3>Login</h3>
+    <main style="max-width: max-content; margin: auto">
+      <div style="margin-top:6em"></div>
+      <h3 style="margin-top: 2em; text-align:center" >Login</h3>
+      <div style="margin-top: 2em"></div>
       <form action="/login" method="POST">
         <div class="form-group mb-2">
           <label for="email">Email address</label>
@@ -26,7 +28,8 @@
           name="email" 
           placeholder="Enter email" 
           style="width: 300px">
-
+        </div>
+        <div class="form-group mb-2" >
           <label for="password">Password</label>
           <input 
           class="form-control" 
@@ -34,6 +37,9 @@
           name="password" 
           placeholder="Enter password" 
           style="width: 300px">
+        </div>
+        <div style="margin-top: 2em"></div>
+        <div class="text-center" >
           <button type="submit" class="btn btn-primary">Login</button>
         </div>
       </form>
