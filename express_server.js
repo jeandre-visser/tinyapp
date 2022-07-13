@@ -22,6 +22,16 @@ function generateRandomString() {
   return randomStr;
 }
 
+// find user with email in database
+const getUserByEmail = (email, database) => {
+  for (const user in database) {
+    if (database[user].email === email) {
+      return database[user];
+    }
+  }
+  return null;
+}
+
 // stores users
 const users = {
   userRandomID: {
@@ -60,7 +70,7 @@ app.get("/u/:id", (req, res) => {
 // Allows us to render a new website URL and displays it with the urls_new template
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["userId"]]
+    user: users[req.cookies["user_id"]]
   }
   res.render("urls_new", templateVars);
 });
@@ -79,8 +89,24 @@ app.post('/urls/:id/', (req, res) => {
 
 // login functionality
 app.post('/login', (req, res) => {
-  res.cookie('username', req.body.username)
-  res.redirect('/urls')
+  const user = getUserByEmail(req.body.email, users)
+
+  if (user) {
+    if(req.body.password === user.password) {
+      res.cookie('user_id', user.userId)
+      res.redirect('/urls')
+    } else {
+      res.statusCode = 403;
+      res.send('You have entered the incorrect password.');
+    }
+  } else {
+    res.statusCode = 403;
+    res.send('That email address could not be found.')
+  }
+
+
+
+
 })
 
 // Generates short URL that is added to database and redirected to urls/:id
@@ -92,7 +118,7 @@ app.post("/urls", (req, res) => {
 
 // logout endpoint
 app.post('/logout', (req, res) => {
-  res.clearCookie('username')
+  res.clearCookie('user_id')
   res.redirect('/urls')
 });
 
@@ -101,7 +127,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id], 
-    user: users[req.cookies["userId"]] 
+    user: users[req.cookies["user_id"]] 
   };
   res.render("urls_show", templateVars);
 });
@@ -109,7 +135,7 @@ app.get("/urls/:id", (req, res) => {
 // login page
 app.get('/login', (req, res) => {
   const templateVars = {
-    user: users[req.cookies['userId']]
+    user: users[req.cookies['user_id']]
   }
   res.render('login', templateVars)
 });
@@ -117,20 +143,12 @@ app.get('/login', (req, res) => {
 // registration page
 app.get('/register', (req, res) => {
   const templateVars = {
-    user: users[req.cookies['userId']]
+    user: users[req.cookies['user_id']]
   };
   res.render('urls_register', templateVars)
 });
 
-// user lookup helper function
-const getUserByEmail = email => {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return true
-    }
-  }
-  return null;
-}
+
 
 
 // handles the registration form data
@@ -141,7 +159,7 @@ app.post('/register', (req, res) => {
   if (email === '' || password === '') {
     res.statusCode = 400;
     res.send("Invalid email and/or password")
-  } else if (getUserByEmail(email)) {
+  } else if (getUserByEmail(req.body.email, users)) {
     res.statusCode = 400;
     res.send('Email already registered')
   } else {
@@ -158,7 +176,7 @@ app.post('/register', (req, res) => {
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["userId"]],
+    user: users[req.cookies["user_id"]],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
