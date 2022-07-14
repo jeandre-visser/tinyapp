@@ -115,7 +115,7 @@ app.post("/urls", (req, res) => {
 // logout endpoint
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id')
-  res.redirect('/login')
+  res.redirect('/urls')
 });
 
 // Displays short URL and long URL
@@ -129,7 +129,12 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // login page
+// if logged in already, redirect to urls page
 app.get('/login', (req, res) => {
+  if (req.cookies['user_id']) {
+    return res.redirect('/urls');
+  }
+
   const templateVars = {
     user: users[req.cookies['user_id']]
   }
@@ -137,7 +142,12 @@ app.get('/login', (req, res) => {
 });
 
 // registration page
+// if logged in already, redirect to urls page
 app.get('/register', (req, res) => {
+  if (req.cookies['user_id']) {
+    return res.redirect('/urls');
+  }
+
   const templateVars = {
     user: users[req.cookies['user_id']]
   };
