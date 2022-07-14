@@ -192,11 +192,11 @@ app.post('/register', (req, res) => {
       req.session.userID = userId;
       res.redirect('/urls');
     } else {
-      res.status(400)
-      res.send('Email already registered');
+      const errorPage = 'That email already exists.'
+      res.status(400).render('error', {user: users[req.session.userID], errorPage})
     }
   } else {
-    res.status(400);
-    res.send("Empty email and/or password fields.")
+    const errorPage = 'Empty email and/or password fields."'
+    res.status(400).render('error', {user: users[req.session.userID], errorPage})
   }
 });
