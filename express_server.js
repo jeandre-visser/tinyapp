@@ -49,10 +49,7 @@ const users = {
   },
 };
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+const urlDatabase = {};
 
 
 // ROUTING
@@ -62,16 +59,17 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id].longURL;
   if (longURL) {
-  res.redirect(longURL);
+  res.redirect(urlDatabase[req.params.id].longURL);
   } else {
     res.status(404);
+    res.send('The tiny URL was not found.')
   }
 });
 
 // Allows us to render a new website URL and displays it with the urls_new template
-// only logged in users can create new tiny urls
+// check to see if user is logged in before showing urls/new page
 app.get("/urls/new", (req, res) => {
   if(req.cookies['user_id']) {
     const templateVars = {
@@ -93,8 +91,8 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // edit request
 app.post('/urls/:id/', (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL
-  res.redirect('/urls')
+  urlDatabase[req.params.id].longURL = req.body.updatedURL
+  res.redirect(`/urls/${id}`)
 })
 
 // login functionality
@@ -115,11 +113,14 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Generates short URL that is added to database and redirected to urls/:id
+// Creates new url and adds to urlDatabase
 app.post("/urls", (req, res) => {
-  let newId = generateRandomString();
-  urlDatabase[newId] = req.body.longURL;
-  res.redirect(`urls/${newId}`); 
+  const newId = generateRandomString();
+  urlDatabase[newId] = {
+  longURL: req.body.longURL,
+  userId: req.cookies['user_id']
+  }
+  res.redirect(`/urls/${newId}`); 
 });
 
 // logout endpoint
@@ -132,10 +133,10 @@ app.post('/logout', (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
-    longURL: urlDatabase[req.params.id], 
-    user: users[req.cookies["user_id"]] 
+    longURL: urlDatabase[req.params.id].longURL, 
+    user: users[req.cookies['user_id']] 
   };
-  res.render("urls_show", templateVars);
+  res.render('urls_show', templateVars);
 });
 
 // login page
