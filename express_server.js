@@ -37,13 +37,8 @@ app.get("/u/:id", (req, res) => {
   if (urlDatabase[req.params.id]) {
     res.redirect(urlDatabase[req.params.id].longURL);
   } else {
-    const templateVars = {
-      user: users[req.session.userID],
-      urlDatabase: {},
-      id: ''
-    }
-    res.status(404);
-    res.render('urls_show', templateVars)
+    const errorPage = 'The tiny URL does not exist.'
+    res.status(404).render('error', {user: users[req.session.userID], errorPage});
   }
 });
 
@@ -62,8 +57,9 @@ app.get("/urls/new", (req, res) => {
 
 // deletes url after checking if the user owns the url
 app.post('/urls/:id/delete', (req, res) => {
+  const id = req.params.id;
   if (req.session.userID && req.session.userID === urlDatabase[id].userID) {
-    delete urlDatabase[req.params.id];
+    delete urlDatabase[id];
     res.redirect('/urls')
   } else {
     const errorPage = 'User authorization denied.';
@@ -73,8 +69,9 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // edits longURL and makes sure user owns the url
 app.post('/urls/:id/', (req, res) => {
+  const id = req.params.id;
   if (req.session.userID && req.session.userID === urlDatabase[id].userID) {
-    urlDatabase[req.params.id].longURL = req.body.updatedURL;
+    urlDatabase[id].longURL = req.body.updatedURL;
     res.redirect('/urls/')
   } else {
     const errorPage = 'User authorization denied.'
