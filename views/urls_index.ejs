@@ -18,8 +18,10 @@
   </head>
   <body>
     <%- include('partials/_header') %>
+
     <main style="margin: 1em;">
       <h3>My URLs</h3>
+      <% if (user) { %> 
       <table class="table">
         <thead>
           <tr>
@@ -32,13 +34,12 @@
         <tbody>
           <% for (let id in urls) { %>
             <tr>
-              <td><a href='#'><%= id %></a></td>
-              <td><a href='#'><%= urls[id] %></a></td>
+              <td>><%= id %></td>
+              <td><%= urls[id].longURL %></td>
               <!--Button to be directed to EDIT page-->
-              <td><form method="GET" action="/urls/<%= id %>">
-                <button type="submit" class="btn btn-outline-primary">Edit</button>
-              </form></td>
-
+              <td>
+                <a class="btn btn-outline-primary" href="/urls/<%= id %>">Edit</a>
+              </td>
               <!--Button to delete-->
               <td>
                 <form method="POST" action='/urls/<%= id %>/delete' >
@@ -49,6 +50,10 @@
           <% } %>
         </tbody>
       </table>
+      <a class="btn btn-primary" href="/urls/new">Create New Tiny URL</a>
+      <% } else { %>
+        <h3 class="text-muted">Login or register to see your URLs.</h3>
+        <% } %>  
     </main>
     <!-- Bootstrap JS -->
     <script
