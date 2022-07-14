@@ -94,15 +94,21 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// delete url
+// deletes url after checking if the user owns the url
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.params.id]
+  if (req.cookies['user_id'] === urlDatabase[id].userID) {
+    delete urlDatabase[req.params.id]
+  }
+
   res.redirect('/urls')
 })
 
-// edit request
+// edits longURL and makes sure user owns the url
 app.post('/urls/:id/', (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.updatedURL
+  if (req.cookies['user_id'] === urlDatabase[id].userID) {
+    urlDatabase[req.params.id].longURL = req.body.updatedURL;
+  }
+
   res.redirect(`/urls/${id}`)
 })
 
