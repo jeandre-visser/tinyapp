@@ -17,4 +17,15 @@ function generateRandomString() {
   return randomStr;
 }
 
-module.exports = { getUserByEmail, generateRandomString };
+// returns the URLs where the userID is equal to the id of the currently logged-in user
+const urlsForUser = (id, database) => {
+  let userUrls = {};
+  for (const tinyUrl in database) {
+    if (database[tinyUrl].userID === id) {
+      userUrls[tinyUrl] = database[tinyUrl]
+    }
+  }
+  return userUrls;
+}
+
+module.exports = { getUserByEmail, generateRandomString, urlsForUser };
