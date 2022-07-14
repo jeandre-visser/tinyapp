@@ -13,8 +13,7 @@
 
   <body>
     <%- include('partials/_header') %>
-    <% if (user) { %>
-      <% if (urls[id]) { %> 
+
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
@@ -47,12 +46,6 @@
         </div>
       </div>
     </div>
-    <% } else { %>
-        <h3 class ="text-muted" style="margin: 1em">URL not accessible: You do not own this URL,</h3>
-        <% } %>
-      <% } else { %> 
-        <h3 class="text-muted" style="margin: 1em">In order to see this URL, you must login or register.</h3>  
-      <% } %> 
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
