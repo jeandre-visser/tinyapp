@@ -3,9 +3,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 
-const sessionession = require('session-session');
+const cookieSession = require('cookie-session');
 const { response } = require("express");
-app.use(sessionession({
+app.use(cookieSession({
   name: 'session',
   secret: 'this-is-my-secret',
 }))
