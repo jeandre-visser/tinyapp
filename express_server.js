@@ -130,17 +130,25 @@ app.post('/logout', (req, res) => {
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
+  const id = req.params.id
   const userID = req.session.userID;
   const userUrls = urlsForUser(userID, urlDatabase);
   const templateVars = {
-    id: req.params.id, 
+    urlDatabase,
+    id,
     urls: userUrls,
     user: users[userID] 
   };
-  // error handlers for if the user is not logged in or does not own url
-  // input error handlers here**
-
-  res.render('urls_show', templateVars);
+ // error handlers for if the user is not logged in or does not own url
+  if (!urlDatabase[id]) {
+    const errorPage = 'The tiny URL does not exist.';
+    res.status(401).render('error', {user: users[userID], errorPage});
+  } else if (!userID || !userUrls[id]) {
+    const errorPage = 'User authorization to view URL denied.';
+    res.status(401).render('error', {user: users[userID], errorPage});
+  } else {
+    res.render('urls_show', templateVars)
+  }
 });
 
 // login page
