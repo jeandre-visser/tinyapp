@@ -75,9 +75,13 @@ app.post('/urls/:id/delete', (req, res) => {
 app.post('/urls/:id/', (req, res) => {
   if (req.session.userID === urlDatabase[id].userID) {
     urlDatabase[req.params.id].longURL = req.body.updatedURL;
+    res.redirect('/urls/')
+  } else {
+    const errorPage = 'User authorization denied.'
+    res.status(401).render('error', {user: users[req.session.userID], errorPage})
   }
 
-  res.redirect(`/urls/${id}`)
+  
 })
 
 // login functionality
