@@ -198,13 +198,13 @@ app.post('/register', (req, res) => {
 
   if (req.body.email && req.body.password) {
     if (!getUserByEmail(req.body.email, users)) {
-      const userId = generateRandomString();
-      users[userId] = {
-        userId,
+      const userID = generateRandomString();
+      users[userID] = {
+        userID,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 10)
       };
-      req.session.userID = userId;
+      req.session.userID = userID;
       res.redirect('/urls');
     } else {
       const errorPage = 'That email already exists.'
