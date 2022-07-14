@@ -86,7 +86,7 @@ app.post('/login', (req, res) => {
   const user = getUserByEmail(req.body.email, users)
 
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
-      req.session.userID = user.userId
+      req.session.userID = user.userID
       res.redirect('/urls')
   } else {
     const errorPage = 'Invalid login information.'
