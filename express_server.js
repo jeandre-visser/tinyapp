@@ -64,12 +64,14 @@ app.get("/urls/new", (req, res) => {
 
 // deletes url after checking if the user owns the url
 app.post('/urls/:id/delete', (req, res) => {
-  if (req.session.userID === urlDatabase[id].userID) {
-    delete urlDatabase[req.params.id]
+  if (req.session.userID && req.session.userID === urlDatabase[id].userID) {
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls')
+  } else {
+    const errorPage = 'User authorization denied.';
+    res.status(401).render('error', {user: users[req.session.userID], errorPage})
   }
-
-  res.redirect('/urls')
-})
+});
 
 // edits longURL and makes sure user owns the url
 app.post('/urls/:id/', (req, res) => {
