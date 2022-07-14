@@ -8,4 +8,13 @@ const getUserByEmail = (email, database) => {
   return undefined;
 }
 
-module.exports = { getUserByEmail };
+
+function generateRandomString() {
+  let randomStr = Math.random().toString(36).substring(6);
+  if (randomStr.length !== 6) {
+    randomStr = generateRandomString();
+  }
+  return randomStr;
+}
+
+module.exports = { getUserByEmail, generateRandomString };
