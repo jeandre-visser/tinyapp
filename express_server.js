@@ -36,11 +36,11 @@ const getUserByEmail = (email, database) => {
 }
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user
-const urlsForUser = id => {
+const urlsForUser = (id, database) => {
   let userUrls = {};
-  for (const tinyUrl in urlDatabase) {
-    if (urlDatabase[tinyUrl].userID === id) {
-      userUrls[tinyUrl] = urlDatabase[tinyUrl]
+  for (const tinyUrl in database) {
+    if (database[tinyUrl].userID === id) {
+      userUrls[tinyUrl] = database[tinyUrl]
     }
   }
   return userUrls;
@@ -72,7 +72,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id].longURL;
   if (longURL) {
-  res.redirect(urlDatabase[req.params.id].longURL);
+  res.redirect(longURL);
   } else {
     res.status(404);
     res.send('The tiny URL was not found.')
@@ -149,7 +149,7 @@ app.post('/logout', (req, res) => {
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies['user_id'];
-  const userUrls = urlsForUser(userID);
+  const userUrls = urlsForUser(userID, urlDatabase);
   const templateVars = {
     id: req.params.id, 
     urls: userUrls,
@@ -188,7 +188,7 @@ app.get('/register', (req, res) => {
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
   const userID = req.cookies['user_id'];
-  const userUrls = urlsForUser(userID)
+  const userUrls = urlsForUser(userID, urlDatabase)
   const templateVars = {
     user: users[userID],
     urls: userUrls
