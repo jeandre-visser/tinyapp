@@ -3,12 +3,11 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 
-const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}));
-
 const cookieParser = require('cookie-parser');
 const { response } = require("express");
 app.use(cookieParser())
+
+const bcrypt = require('bcryptjs');
 
 // EJS template
 app.set("view engine", "ejs");
@@ -47,18 +46,7 @@ const urlsForUser = (id, database) => {
 }
 
 // stores users
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
+const users = {};
 
 const urlDatabase = {};
 
@@ -218,13 +206,14 @@ app.get("/", (req, res) => {
 
 // handles the registration form data
 app.post('/register', (req, res) => {
+
   if (req.body.email && req.body.password) {
     if (!getUserByEmail(req.body.email, users)) {
       const userId = generateRandomString();
       users[userId] = {
         userId,
         email: req.body.email,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password, 10)
       };
       res.cookie('user_id', userId);
       res.redirect('/urls');
