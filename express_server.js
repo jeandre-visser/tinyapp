@@ -65,13 +65,19 @@ const urlDatabase = {};
 
 // ROUTING
 
+// redirect from tiny url to long url 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id].longURL;
-  if (longURL) {
-  res.redirect(longURL);
+
+  if (urlDatabase[req.params.id]) {
+    res.redirect(urlDatabase[req.params.id].longURL);
   } else {
+    const templateVars = {
+      user: users[req.session.user_id],
+      urlDatabase: {},
+      id: ''
+    }
     res.status(404);
-    res.send('The tiny URL was not found.')
+    res.render('urls_show', templateVars)
   }
 });
 
@@ -127,6 +133,7 @@ app.post('/login', (req, res) => {
 });
 
 // Creates new url and adds to urlDatabase
+// redirects to urls_show
 app.post("/urls", (req, res) => {
   const newId = generateRandomString();
   urlDatabase[newId] = {
@@ -151,6 +158,9 @@ app.get("/urls/:id", (req, res) => {
     urls: userUrls,
     user: users[userID] 
   };
+  // error handlers for if the user is not logged in or does not own url
+  // input error handlers here**
+
   res.render('urls_show', templateVars);
 });
 
@@ -181,7 +191,7 @@ app.get('/register', (req, res) => {
 });
 
 
-// Displays our urls in the urlDatabase by using urls_index template
+// If logged in, displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
   const userID = req.cookies['user_id'];
   const userUrls = urlsForUser(userID, urlDatabase)
