@@ -35,6 +35,17 @@ const getUserByEmail = (email, database) => {
   return null;
 }
 
+// returns the URLs where the userID is equal to the id of the currently logged-in user
+const urlsForUser = id => {
+  let userUrls = {};
+  for (const tinyUrl in urlDatabase) {
+    if (urlDatabase[tinyUrl].userID === id) {
+      userUrls[tinyUrl] = urlDatabase[tinyUrl]
+    }
+  }
+  return userUrls;
+}
+
 // stores users
 const users = {
   userRandomID: {
@@ -168,9 +179,11 @@ app.get('/register', (req, res) => {
 
 // Displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
+  const userID = req.cookies['user_id'];
+  const userUrls = urlsForUser(userID)
   const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls: urlDatabase
+    user: users[userID],
+    urls: userUrls
   };
   res.render("urls_index", templateVars);
 });
