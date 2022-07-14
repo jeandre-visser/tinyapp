@@ -142,10 +142,12 @@ app.post('/logout', (req, res) => {
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { 
+  const userID = req.cookies['user_id'];
+  const userUrls = urlsForUser(userID);
+  const templateVars = {
     id: req.params.id, 
-    longURL: urlDatabase[req.params.id].longURL, 
-    user: users[req.cookies['user_id']] 
+    urls: userUrls,
+    user: users[userID] 
   };
   res.render('urls_show', templateVars);
 });
