@@ -65,10 +65,6 @@ const urlDatabase = {};
 
 // ROUTING
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id].longURL;
   if (longURL) {
@@ -193,6 +189,11 @@ app.get("/urls", (req, res) => {
     user: users[userID],
     urls: userUrls
   };
+  // if not logged in, show error for urls page"
+  if (!userID) {
+    res.status(401);
+    res.send('Error Status 401: Cannot access urls, please login or register.')
+  }
   res.render("urls_index", templateVars);
 });
 
