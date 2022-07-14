@@ -73,7 +73,7 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // edits longURL and makes sure user owns the url
 app.post('/urls/:id/', (req, res) => {
-  if (req.session.userID === urlDatabase[id].userID) {
+  if (req.session.userID && req.session.userID === urlDatabase[id].userID) {
     urlDatabase[req.params.id].longURL = req.body.updatedURL;
     res.redirect('/urls/')
   } else {
