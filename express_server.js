@@ -15,6 +15,10 @@ const bcrypt = require('bcryptjs');
 // EJS template
 app.set("view engine", "ejs");
 
+// helper functions
+const { getUserByEmail } = require('./helpers')
+
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -27,15 +31,6 @@ function generateRandomString() {
   return randomStr;
 }
 
-// find user with email in database
-const getUserByEmail = (email, database) => {
-  for (const user in database) {
-    if (database[user].email === email) {
-      return database[user];
-    }
-  }
-  return null;
-}
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user
 const urlsForUser = (id, database) => {
