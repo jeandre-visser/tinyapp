@@ -3,9 +3,12 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 
-const cookieParser = require('cookie-parser');
+const sessionession = require('session-session');
 const { response } = require("express");
-app.use(cookieParser())
+app.use(sessionession({
+  name: 'session',
+  secret: 'this-is-my-secret',
+}))
 
 const bcrypt = require('bcryptjs');
 
@@ -72,9 +75,9 @@ app.get("/u/:id", (req, res) => {
 // Allows us to render a new website URL and displays it with the urls_new template
 // check to see if user is logged in before showing urls/new page
 app.get("/urls/new", (req, res) => {
-  if(req.cookies['user_id']) {
+  if(req.session['user_id']) {
     const templateVars = {
-      user: users[req.cookies['user_id']]
+      user: users[req.session['user_id']]
     }
     res.render('urls_new', templateVars)
   } else {
@@ -86,7 +89,7 @@ app.get("/urls/new", (req, res) => {
 
 // deletes url after checking if the user owns the url
 app.post('/urls/:id/delete', (req, res) => {
-  if (req.cookies['user_id'] === urlDatabase[id].userID) {
+  if (req.session['user_id'] === urlDatabase[id].userID) {
     delete urlDatabase[req.params.id]
   }
 
@@ -95,7 +98,7 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // edits longURL and makes sure user owns the url
 app.post('/urls/:id/', (req, res) => {
-  if (req.cookies['user_id'] === urlDatabase[id].userID) {
+  if (req.session['user_id'] === urlDatabase[id].userID) {
     urlDatabase[req.params.id].longURL = req.body.updatedURL;
   }
 
@@ -108,7 +111,7 @@ app.post('/login', (req, res) => {
 
   if (user) {
     if(bcrypt.compareSync(req.body.password, user.password)) {
-      res.cookie('user_id', user.userId)
+      res.session('user_id', user.userId)
       res.redirect('/urls')
     } else {
       res.status(403);
@@ -126,20 +129,21 @@ app.post("/urls", (req, res) => {
   const newId = generateRandomString();
   urlDatabase[newId] = {
   longURL: req.body.longURL,
-  userId: req.cookies['user_id']
+  userId: req.session['user_id']
   }
   res.redirect(`/urls/${newId}`); 
 });
 
 // logout endpoint
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id')
+  res.clearCookie('session')
+  res.clearCookie('session.sig')
   res.redirect('/urls')
 });
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session['user_id'];
   const userUrls = urlsForUser(userID, urlDatabase);
   const templateVars = {
     id: req.params.id, 
@@ -155,12 +159,12 @@ app.get("/urls/:id", (req, res) => {
 // login page
 // if logged in already, redirect to urls page
 app.get('/login', (req, res) => {
-  if (req.cookies['user_id']) {
+  if (req.session['user_id']) {
     return res.redirect('/urls');
   }
 
   const templateVars = {
-    user: users[req.cookies['user_id']]
+    user: users[req.session['user_id']]
   }
   res.render('login', templateVars)
 });
@@ -168,12 +172,12 @@ app.get('/login', (req, res) => {
 // registration page
 // if logged in already, redirect to urls page
 app.get('/register', (req, res) => {
-  if (req.cookies['user_id']) {
+  if (req.session['user_id']) {
     return res.redirect('/urls');
   }
 
   const templateVars = {
-    user: users[req.cookies['user_id']]
+    user: users[req.session['user_id']]
   };
   res.render('urls_register', templateVars)
 });
@@ -181,7 +185,7 @@ app.get('/register', (req, res) => {
 
 // If logged in, displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session['user_id'];
   const userUrls = urlsForUser(userID, urlDatabase)
   const templateVars = {
     user: users[userID],
@@ -215,7 +219,7 @@ app.post('/register', (req, res) => {
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 10)
       };
-      res.cookie('user_id', userId);
+      res.session('user_id', userId);
       res.redirect('/urls');
     } else {
       res.status(400)
