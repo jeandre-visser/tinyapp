@@ -58,8 +58,6 @@ app.get("/urls/new", (req, res) => {
   } else {
     res.redirect('/login');
   }
-
-  res.render("urls_new", templateVars);
 });
 
 // deletes url after checking if the user owns the url
@@ -114,11 +112,6 @@ app.post("/urls", (req, res) => {
     const errorPage = 'In order to create a URL, you must first be logged in.';
     res.status(401).render('error', {user: users[req.session.userID], errorPage})
   }
-
-
-
-
-
 });
 
 // logout endpoint
@@ -136,13 +129,13 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     urlDatabase,
     id,
-    urls: userUrls,
+    userUrls,
     user: users[userID] 
   };
  // error handlers for if the user is not logged in or does not own url
   if (!urlDatabase[id]) {
     const errorPage = 'The tiny URL does not exist.';
-    res.status(401).render('error', {user: users[userID], errorPage});
+    res.status(404).render('error', {user: users[userID], errorPage});
   } else if (!userID || !userUrls[id]) {
     const errorPage = 'User authorization to view URL denied.';
     res.status(401).render('error', {user: users[userID], errorPage});
@@ -186,7 +179,7 @@ app.get("/urls", (req, res) => {
     user: users[userID],
     urls: userUrls
   };
-  // if not logged in, show error for urls page"
+  // if not logged in, show error for urls page
   if (!userID) {
     res.status(401);
     res.send('Error Status 401: Cannot access urls, please login or register.')
