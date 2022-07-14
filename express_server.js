@@ -102,12 +102,23 @@ app.post('/login', (req, res) => {
 // Creates new url and adds to urlDatabase
 // redirects to urls_show
 app.post("/urls", (req, res) => {
-  const newId = generateRandomString();
-  urlDatabase[newId] = {
-  longURL: req.body.longURL,
-  userId: req.session.userID
+
+  if (req.session.userID) {
+    const newId = generateRandomString();
+    urlDatabase[newId] = {
+      longURL: req.body.longURL,
+      userId: req.session.userID
+      };
+    res.redirect(`/urls/${newId}`); 
+  } else {
+    const errorPage = 'In order to create a URL, you must first be logged in.';
+    res.status(401).render('error', {user: users[req.session.userID], errorPage})
   }
-  res.redirect(`/urls/${newId}`); 
+
+
+
+
+
 });
 
 // logout endpoint
