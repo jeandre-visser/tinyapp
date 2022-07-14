@@ -3,6 +3,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
+
 const cookieParser = require('cookie-parser');
 const { response } = require("express");
 app.use(cookieParser())
@@ -68,10 +71,17 @@ app.get("/u/:id", (req, res) => {
 });
 
 // Allows us to render a new website URL and displays it with the urls_new template
+// only logged in users can create new tiny urls
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
+  if(req.cookies['user_id']) {
+    const templateVars = {
+      user: users[req.cookies['user_id']]
+    }
+    res.render('urls_new', templateVars)
+  } else {
+    res.redirect('/login');
   }
+
   res.render("urls_new", templateVars);
 });
 
