@@ -16,20 +16,12 @@ const bcrypt = require('bcryptjs');
 app.set("view engine", "ejs");
 
 // helper functions
-const { getUserByEmail } = require('./helpers')
+const { getUserByEmail, generateRandomString } = require('./helpers')
 
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-function generateRandomString() {
-  let randomStr = Math.random().toString(36).substring(6);
-  if (randomStr.length !== 6) {
-    randomStr = generateRandomString();
-  }
-  return randomStr;
-}
 
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user
