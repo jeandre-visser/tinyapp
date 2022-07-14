@@ -107,7 +107,7 @@ app.post('/login', (req, res) => {
   const user = getUserByEmail(req.body.email, users)
 
   if (user) {
-    if(req.body.password === user.password) {
+    if(bcrypt.compareSync(req.body.password, user.password)) {
       res.cookie('user_id', user.userId)
       res.redirect('/urls')
     } else {
