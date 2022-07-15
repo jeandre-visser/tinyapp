@@ -8,7 +8,7 @@ const { response } = require("express");
 app.use(cookieSession({
   name: 'session',
   secret: 'this-is-my-secret',
-}))
+}));
 
 const bcrypt = require('bcryptjs');
 
@@ -16,7 +16,7 @@ const bcrypt = require('bcryptjs');
 app.set("view engine", "ejs");
 
 // helper functions
-const { getUserByEmail, generateRandomString, urlsForUser } = require('./helpers')
+const { getUserByEmail, generateRandomString, urlsForUser } = require('./helpers');
 
 
 app.listen(PORT, () => {
@@ -31,13 +31,13 @@ const urlDatabase = {};
 
 // ROUTING
 
-// redirect from tiny url to long url 
+// redirect from tiny url to long url
 app.get("/u/:id", (req, res) => {
 
   if (urlDatabase[req.params.id]) {
     res.redirect(urlDatabase[req.params.id].longURL);
   } else {
-    const errorPage = 'The tiny URL does not exist.'
+    const errorPage = 'The tiny URL does not exist.';
     res.status(404).render('error', {user: users[req.session.user_id], errorPage});
   }
 });
@@ -45,11 +45,11 @@ app.get("/u/:id", (req, res) => {
 // Allows us to render a new website URL and displays it with the urls_new template
 // check to see if user is logged in before showing urls/new page
 app.get("/urls/new", (req, res) => {
-  if(req.session.user_id) {
+  if (req.session.user_id) {
     const templateVars = {
       user: users[req.session.user_id]
-    }
-    res.render('urls_new', templateVars)
+    };
+    res.render('urls_new', templateVars);
   } else {
     res.redirect('/login');
   }
@@ -60,10 +60,10 @@ app.post('/urls/:id/delete', (req, res) => {
   const id = req.params.id;
   if (req.session.user_id && req.session.user_id === urlDatabase[id].userId) {
     delete urlDatabase[id];
-    res.redirect('/urls')
+    res.redirect('/urls');
   } else {
     const errorPage = 'User authorization denied.';
-    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage});
   }
 });
 
@@ -72,27 +72,26 @@ app.post('/urls/:id/', (req, res) => {
   const id = req.params.id;
   if (req.session.user_id && req.session.user_id === urlDatabase[id].userId) {
     urlDatabase[id].longURL = req.body.updatedURL;
-    res.redirect('/urls/')
+    res.redirect('/urls/');
   } else {
-    const errorPage = 'User authorization denied.'
-    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
+    const errorPage = 'User authorization denied.';
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage});
   }
-
-})
+});
 
 // login functionality
 app.post('/login', (req, res) => {
-  const user = getUserByEmail(req.body.email, users)
+  const user = getUserByEmail(req.body.email, users);
 
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
-      req.session.user_id = user.userID
-      res.redirect('/urls')
-  } else if (req.body.email === '' || req.body.password === ''){
-    const errorPage = 'Please do not leave login field blank.'
-    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
+    req.session.user_id = user.userID;
+    res.redirect('/urls');
+  } else if (req.body.email === '' || req.body.password === '') {
+    const errorPage = 'Please do not leave login field blank.';
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage});
   } else {
-    const errorPage = 'Invalid login information.'
-    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
+    const errorPage = 'Invalid login information.';
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage});
   }
 });
 
@@ -105,33 +104,32 @@ app.post("/urls", (req, res) => {
     urlDatabase[newId] = {
       longURL: req.body.longURL,
       userId: req.session.user_id
-      };
-      console.log(urlDatabase)
-    res.redirect(`/urls/${newId}`); 
+    };
+    res.redirect(`/urls/${newId}`);
   } else {
     const errorPage = 'In order to create a URL, you must first be logged in.';
-    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage});
   }
 });
 
 // logout endpoint
 app.post('/logout', (req, res) => {
   req.session = null;
-  res.redirect('/login')
+  res.redirect('/login');
 });
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
   const userID = req.session.user_id;
   const userUrls = urlsForUser(userID, urlDatabase);
-  console.log("userUrls", userUrls)
+
   const templateVars = {
     id,
     urls: userUrls,
-    user: users[userID] 
+    user: users[userID]
   };
- // error handlers for if the user is not logged in or does not own url
+  // error handlers for if the user is not logged in or does not own url
   if (!urlDatabase[id]) {
     const errorPage = 'The tiny URL does not exist.';
     res.status(404).render('error', {user: users[userID], errorPage});
@@ -139,7 +137,7 @@ app.get("/urls/:id", (req, res) => {
     const errorPage = 'User authorization to view URL denied.';
     res.status(401).render('error', {user: users[userID], errorPage});
   } else {
-    res.render('urls_show', templateVars)
+    res.render('urls_show', templateVars);
   }
 });
 
@@ -152,8 +150,8 @@ app.get('/login', (req, res) => {
 
   const templateVars = {
     user: users[req.session.user_id]
-  }
-  res.render('login', templateVars)
+  };
+  res.render('login', templateVars);
 });
 
 // registration page
@@ -166,22 +164,22 @@ app.get('/register', (req, res) => {
   const templateVars = {
     user: users[req.session.user_id]
   };
-  res.render('urls_register', templateVars)
+  res.render('urls_register', templateVars);
 });
 
 
 // If logged in, displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
-  const userUrls = urlsForUser(userID, urlDatabase)
+  const userUrls = urlsForUser(userID, urlDatabase);
   const templateVars = {
     user: users[userID],
     urls: userUrls
   };
   // if not logged in, show error for urls page
   if (!userID) {
-    const errorPage = 'You must first be logged in to view URLs.'
-      res.status(400).render('error', {user: users[req.session.user_id], errorPage})
+    const errorPage = 'You must first be logged in to view URLs.';
+    res.status(400).render('error', {user: users[req.session.user_id], errorPage});
   }
   res.render("urls_index", templateVars);
 });
@@ -191,7 +189,7 @@ app.get("/", (req, res) => {
   if (req.session.user_id) {
     res.redirect('/urls');
   } else {
-    res.redirect('/login')
+    res.redirect('/login');
   }
 });
 
@@ -209,11 +207,11 @@ app.post('/register', (req, res) => {
       req.session.user_id = userID;
       res.redirect('/urls');
     } else {
-      const errorPage = 'That email already exists.'
-      res.status(400).render('error', {user: users[req.session.user_id], errorPage})
+      const errorPage = 'That email already exists.';
+      res.status(400).render('error', {user: users[req.session.user_id], errorPage});
     }
   } else {
-    const errorPage = 'Please do not leave empty email and/or password fields.'
-    res.status(400).render('error', {user: users[req.session.user_id], errorPage})
+    const errorPage = 'Please do not leave empty email and/or password fields.';
+    res.status(400).render('error', {user: users[req.session.user_id], errorPage});
   }
 });
