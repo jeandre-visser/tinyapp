@@ -38,16 +38,16 @@ app.get("/u/:id", (req, res) => {
     res.redirect(urlDatabase[req.params.id].longURL);
   } else {
     const errorPage = 'The tiny URL does not exist.'
-    res.status(404).render('error', {user: users[req.session.userID], errorPage});
+    res.status(404).render('error', {user: users[req.session.user_id], errorPage});
   }
 });
 
 // Allows us to render a new website URL and displays it with the urls_new template
 // check to see if user is logged in before showing urls/new page
 app.get("/urls/new", (req, res) => {
-  if(req.session.userID) {
+  if(req.session.user_id) {
     const templateVars = {
-      user: users[req.session.userID]
+      user: users[req.session.user_id]
     }
     res.render('urls_new', templateVars)
   } else {
@@ -58,27 +58,26 @@ app.get("/urls/new", (req, res) => {
 // deletes url after checking if the user owns the url
 app.post('/urls/:id/delete', (req, res) => {
   const id = req.params.id;
-  if (req.session.userID && req.session.userID === urlDatabase[id].userID) {
+  if (req.session.user_id && req.session.user_id === urlDatabase[id].userId) {
     delete urlDatabase[id];
     res.redirect('/urls')
   } else {
     const errorPage = 'User authorization denied.';
-    res.status(401).render('error', {user: users[req.session.userID], errorPage})
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
   }
 });
 
 // edits longURL and makes sure user owns the url
 app.post('/urls/:id/', (req, res) => {
   const id = req.params.id;
-  if (req.session.userID && req.session.userID === urlDatabase[id].userID) {
+  if (req.session.user_id && req.session.user_id === urlDatabase[id].userId) {
     urlDatabase[id].longURL = req.body.updatedURL;
     res.redirect('/urls/')
   } else {
     const errorPage = 'User authorization denied.'
-    res.status(401).render('error', {user: users[req.session.userID], errorPage})
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
   }
 
-  
 })
 
 // login functionality
@@ -86,11 +85,14 @@ app.post('/login', (req, res) => {
   const user = getUserByEmail(req.body.email, users)
 
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
-      req.session.userID = user.userID
+      req.session.user_id = user.userID
       res.redirect('/urls')
+  } else if (req.body.email === '' || req.body.password === ''){
+    const errorPage = 'Please do not leave login field blank.'
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
   } else {
     const errorPage = 'Invalid login information.'
-    res.status(401).render('urls_error', {user: users[req.session.userID], errorPage})
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
   }
 });
 
@@ -98,35 +100,35 @@ app.post('/login', (req, res) => {
 // redirects to urls_show
 app.post("/urls", (req, res) => {
 
-  if (req.session.userID) {
+  if (req.session.user_id) {
     const newId = generateRandomString();
     urlDatabase[newId] = {
       longURL: req.body.longURL,
-      userId: req.session.userID
+      userId: req.session.user_id
       };
+      console.log(urlDatabase)
     res.redirect(`/urls/${newId}`); 
   } else {
     const errorPage = 'In order to create a URL, you must first be logged in.';
-    res.status(401).render('error', {user: users[req.session.userID], errorPage})
+    res.status(401).render('error', {user: users[req.session.user_id], errorPage})
   }
 });
 
 // logout endpoint
 app.post('/logout', (req, res) => {
-  res.clearCookie('session')
-  res.clearCookie('session.sig')
-  res.redirect('/urls')
+  req.session = null;
+  res.redirect('/login')
 });
 
 // Displays short URL and long URL
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id
-  const userID = req.session.userID;
+  const userID = req.session.user_id;
   const userUrls = urlsForUser(userID, urlDatabase);
+  console.log("userUrls", userUrls)
   const templateVars = {
-    urlDatabase,
     id,
-    userUrls,
+    urls: userUrls,
     user: users[userID] 
   };
  // error handlers for if the user is not logged in or does not own url
@@ -144,12 +146,12 @@ app.get("/urls/:id", (req, res) => {
 // login page
 // if logged in already, redirect to urls page
 app.get('/login', (req, res) => {
-  if (req.session.userID) {
+  if (req.session.user_id) {
     return res.redirect('/urls');
   }
 
   const templateVars = {
-    user: users[req.session.userID]
+    user: users[req.session.user_id]
   }
   res.render('login', templateVars)
 });
@@ -157,12 +159,12 @@ app.get('/login', (req, res) => {
 // registration page
 // if logged in already, redirect to urls page
 app.get('/register', (req, res) => {
-  if (req.session.userID) {
+  if (req.session.user_id) {
     return res.redirect('/urls');
   }
 
   const templateVars = {
-    user: users[req.session.userID]
+    user: users[req.session.user_id]
   };
   res.render('urls_register', templateVars)
 });
@@ -170,7 +172,7 @@ app.get('/register', (req, res) => {
 
 // If logged in, displays our urls in the urlDatabase by using urls_index template
 app.get("/urls", (req, res) => {
-  const userID = req.session.userID;
+  const userID = req.session.user_id;
   const userUrls = urlsForUser(userID, urlDatabase)
   const templateVars = {
     user: users[userID],
@@ -178,15 +180,15 @@ app.get("/urls", (req, res) => {
   };
   // if not logged in, show error for urls page
   if (!userID) {
-    res.status(401);
-    res.send('Error Status 401: Cannot access urls, please login or register.')
+    const errorPage = 'You must first be logged in to view URLs.'
+      res.status(400).render('error', {user: users[req.session.user_id], errorPage})
   }
   res.render("urls_index", templateVars);
 });
 
 // redirect to urls if logged in, otherwise go to login page
 app.get("/", (req, res) => {
-  if (req.session.userID) {
+  if (req.session.user_id) {
     res.redirect('/urls');
   } else {
     res.redirect('/login')
@@ -204,14 +206,14 @@ app.post('/register', (req, res) => {
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 10)
       };
-      req.session.userID = userID;
+      req.session.user_id = userID;
       res.redirect('/urls');
     } else {
       const errorPage = 'That email already exists.'
-      res.status(400).render('error', {user: users[req.session.userID], errorPage})
+      res.status(400).render('error', {user: users[req.session.user_id], errorPage})
     }
   } else {
-    const errorPage = 'Empty email and/or password fields."'
-    res.status(400).render('error', {user: users[req.session.userID], errorPage})
+    const errorPage = 'Please do not leave empty email and/or password fields.'
+    res.status(400).render('error', {user: users[req.session.user_id], errorPage})
   }
 });
