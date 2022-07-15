@@ -14,8 +14,10 @@
 
     <%- include('partials/_header') %>
 
-    <main style="margin: 1em;">
-      <h3>Create TinyURL</h3>
+    <main style="max-width: max-content; margin: auto">
+      <div style="margin-top:6em"></div>
+      <h3 style="margin-top: 2em; text-align:center">Create TinyURL</h3>
+      <div style="margin-top: 2em"></div>
       <form class="form-inline" action="/urls" method="POST">
         <div class="form-group mb-2">
           <label for="longURL">Enter a URL:</label>

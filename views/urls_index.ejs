@@ -14,7 +14,7 @@
   
   <main style="margin: 1em;">
     <h3>My URLs</h3>
-    <% if (user) { %>
+    
     <table class="table">
       <thead>
         <tr>
@@ -42,9 +42,7 @@
       </tbody>
     </table>
     <a class="btn btn-primary" href="/urls/new">Create a New Tiny URL</a>
-    <% } else { %>
-      <h5 class="text-muted mt-3">Login or register to see your URLs.</h5>
-    <% } %>
+
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
