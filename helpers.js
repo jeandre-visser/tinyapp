@@ -6,7 +6,7 @@ const getUserByEmail = (email, database) => {
     }
   }
   return undefined;
-}
+};
 
 
 function generateRandomString() {
@@ -22,11 +22,11 @@ const urlsForUser = (id, database) => {
   let userUrls = {};
   for (const tinyUrl in database) {
     if (database[tinyUrl].userId === id) {
-      userUrls[tinyUrl] = database[tinyUrl]
+      userUrls[tinyUrl] = database[tinyUrl];
     }
   }
   return userUrls;
-}
+};
 
 
 module.exports = { getUserByEmail, generateRandomString, urlsForUser };
