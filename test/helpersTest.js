@@ -13,13 +13,12 @@ const testUsers = {
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
-};
-
+};// getUserByEmailTest
 describe('#getUserByEmail', function() {
   it('should return a user with valid email', function() {
     const user = getUserByEmail("user@example.com", testUsers)
     const expectedUserID = "userRandomID";
-    assert.equal(user, testUsers.expectedUserID)
+    assert.equal(user, testUsers.userRandomID)
   });
 
   it('should return undefined when looking for a non-existent email', function() {
