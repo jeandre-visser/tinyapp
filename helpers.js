@@ -28,24 +28,5 @@ const urlsForUser = (id, database) => {
   return userUrls;
 }
 
-// Validates if email exists yet
-const validateEmail = (email, database) => {
-  for (const key in database) {
-    if (database[key].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
 
-// Input an id and extract email
-const extractEmail = (id, database) => {
-  for (const key in database) {
-    if (database[key].id === id) {
-      return database[key].email
-    }
-  }
-}
-
-
-module.exports = { getUserByEmail, generateRandomString, urlsForUser, extractEmail, validateEmail };
+module.exports = { getUserByEmail, generateRandomString, urlsForUser };
