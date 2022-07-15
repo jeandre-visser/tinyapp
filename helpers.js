@@ -21,7 +21,7 @@ function generateRandomString() {
 const urlsForUser = (id, database) => {
   let userUrls = {};
   for (const tinyUrl in database) {
-    if (database[tinyUrl].userID === id) {
+    if (database[tinyUrl].userId === id) {
       userUrls[tinyUrl] = database[tinyUrl]
     }
   }
